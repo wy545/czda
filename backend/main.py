@@ -61,8 +61,5 @@ if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
-# backend/main.py 末尾应该有：
-app = FastAPI(...)
-
-# Vercel 需要这个
+# Vercel Serverless 需要这个导出
 handler = app

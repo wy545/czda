@@ -1,0 +1,3 @@
+# Vercel Python 部署依赖
+# 引用 backend 目录的依赖
+-r backend/requirements.txt
