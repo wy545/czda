@@ -1,6 +1,6 @@
 """
 Vercel Serverless API 入口点
-所有 /api/* 请求都会路由到这里
+使用 Mangum 适配器将 FastAPI ASGI 应用转换为 AWS Lambda 格式
 """
 import sys
 import os
@@ -9,8 +9,8 @@ import os
 backend_path = os.path.join(os.path.dirname(__file__), '..', 'backend')
 sys.path.insert(0, backend_path)
 
-# 导入 FastAPI 应用
+from mangum import Mangum
 from main import app
 
-# Vercel 需要的处理器
-handler = app
+# 使用 Mangum 适配器包装 FastAPI 应用
+handler = Mangum(app, lifespan="off")
