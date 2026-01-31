@@ -2,7 +2,8 @@
  * API 服务层 - 封装与后端的通信
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// Vercel 部署时前后端同域名，使用相对路径；本地开发时使用完整地址
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 // Token 管理
 const TOKEN_KEY = 'auth_token';
@@ -35,26 +36,26 @@ async function request<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const token = getToken();
-  
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...options.headers as Record<string, string>,
   };
-  
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
-  
+
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers,
   });
-  
+
   if (!response.ok) {
     const error = await response.json().catch(() => ({ detail: '请求失败' }));
     throw new Error(error.detail || '请求失败');
   }
-  
+
   return response.json();
 }
 
@@ -81,7 +82,7 @@ export const authApi = {
       body: JSON.stringify({ phone, password, name }),
     });
   },
-  
+
   /**
    * 用户登录
    */
@@ -90,14 +91,14 @@ export const authApi = {
       method: 'POST',
       body: JSON.stringify({ phone, password }),
     });
-    
+
     // 保存 token 和用户 ID
     setToken(result.access_token);
     setUserId(result.user_id);
-    
+
     return result;
   },
-  
+
   /**
    * 用户登出
    */
@@ -108,14 +109,14 @@ export const authApi = {
       removeToken();
     }
   },
-  
+
   /**
    * 获取当前用户
    */
   getCurrentUser: async () => {
     return request('/auth/me');
   },
-  
+
   /**
    * 注销账号
    */
@@ -154,7 +155,7 @@ export const userApi = {
   getProfile: async (): Promise<UserProfile> => {
     return request('/users/profile');
   },
-  
+
   /**
    * 更新用户资料
    */
@@ -209,14 +210,14 @@ export const archiveApi = {
     const params = category ? `?category=${encodeURIComponent(category)}` : '';
     return request(`/archives${params}`);
   },
-  
+
   /**
    * 获取档案详情
    */
   getById: async (id: string): Promise<ArchiveItem> => {
     return request(`/archives/${id}`);
   },
-  
+
   /**
    * 创建档案
    */
@@ -226,7 +227,7 @@ export const archiveApi = {
       body: JSON.stringify(data),
     });
   },
-  
+
   /**
    * 更新档案
    */
@@ -236,7 +237,7 @@ export const archiveApi = {
       body: JSON.stringify(updates),
     });
   },
-  
+
   /**
    * 删除档案
    */
@@ -264,14 +265,14 @@ export const notificationApi = {
   getAll: async (): Promise<Notification[]> => {
     return request('/notifications');
   },
-  
+
   /**
    * 标记通知已读
    */
   markRead: async (id: string): Promise<void> => {
     await request(`/notifications/${id}/read`, { method: 'PUT' });
   },
-  
+
   /**
    * 标记所有通知已读
    */
